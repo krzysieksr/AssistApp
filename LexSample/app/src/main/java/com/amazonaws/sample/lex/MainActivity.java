@@ -17,6 +17,7 @@ import android.widget.ImageButton;
 import android.widget.Spinner;
 
 import com.amazonaws.auth.CognitoCachingCredentialsProvider;
+import com.amazonaws.auth.CognitoCredentialsProvider;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.sample.lex.R;
 import com.amazonaws.services.polly.AmazonPollyPresigningClient;
@@ -32,10 +33,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private Button textDemoButton;
     private Button speechDemoButton;
     private ImageButton infoButton;
-    private Spinner voicesSpinner;
+    //private Spinner voicesSpinner;
     private AmazonPollyPresigningClient client;
     MediaPlayer mediaPlayer;
-    CognitoCachingCredentialsProvider credentialsProvider;
+    CognitoCredentialsProvider credentialsProvider;
     private static final Regions MY_REGION = Regions.US_EAST_1;
     private static final String COGNITO_POOL_ID="us-east-1:be925de0-60c8-4d54-95ea-211edd0a6a3b";
 
@@ -53,8 +54,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     void initPollyClient() {
         // Initialize the Amazon Cognito credentials provider.
         credentialsProvider =
-                new CognitoCachingCredentialsProvider(
-                        getApplicationContext(),
+                new CognitoCredentialsProvider(
                         COGNITO_POOL_ID,
                         MY_REGION
                 );
