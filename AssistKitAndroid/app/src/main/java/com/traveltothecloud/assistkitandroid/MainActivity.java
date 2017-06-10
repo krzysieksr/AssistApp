@@ -315,6 +315,7 @@ public class MainActivity extends Activity {
                 playButton.setEnabled(false);
 
                 Voice selectedVoice = (Voice) voicesSpinner.getSelectedItem();
+                System.out.println(voicesSpinner.getSelectedItem());
 
                 String textToRead = sampleTextEditText.getText().toString();
 
