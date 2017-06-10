@@ -10,6 +10,20 @@
     android:paddingTop="@dimen/activity_intra_group_separation"
     android:background ="#FFFFFF">
 
-    <include layout="@layout/text_response_content" />
+    <include layout="@layout/text_response_content"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true"
+        android:layout_above="@+id/voiceInterface"
+        android:layout_alignParentTop="true" />
+
+    <include
+        android:id="@+id/voiceInterface"
+        layout="@layout/voice_component"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
 
 </RelativeLayout>

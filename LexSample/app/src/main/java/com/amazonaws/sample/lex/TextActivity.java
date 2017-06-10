@@ -14,18 +14,25 @@ import android.widget.Toast;
 import com.amazonaws.auth.CognitoCredentialsProvider;
 import com.amazonaws.mobileconnectors.lex.interactionkit.InteractionClient;
 import com.amazonaws.mobileconnectors.lex.interactionkit.Response;
+import com.amazonaws.mobileconnectors.lex.interactionkit.config.InteractionConfig;
 import com.amazonaws.mobileconnectors.lex.interactionkit.continuations.LexServiceContinuation;
 import com.amazonaws.mobileconnectors.lex.interactionkit.listeners.AudioPlaybackListener;
 import com.amazonaws.mobileconnectors.lex.interactionkit.listeners.InteractionListener;
+import com.amazonaws.mobileconnectors.lex.interactionkit.ui.InteractiveVoiceView;
 import com.amazonaws.regions.Regions;
 import com.amazonaws.services.lexrts.model.DialogState;
 
 import java.text.DateFormat;
 import java.util.Date;
+import java.util.Locale;
+import java.util.Map;
 
-public class TextActivity extends Activity {
+
+public class TextActivity extends Activity
+        implements InteractiveVoiceView.InteractiveVoiceListener {
     private static final String TAG = "TextActivity";
-    private EditText userTextInput;
+    private InteractiveVoiceView voiceView;
+    //private EditText userTextInput;
     private Context appContext;
     private InteractionClient lexInteractionClient;
     private boolean inConversation;
@@ -36,7 +43,47 @@ public class TextActivity extends Activity {
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_text);
-        init();
+        //init();
+        initVoice();
+    }
+
+    private void initVoice() {
+        appContext = getApplicationContext();
+        voiceView = (InteractiveVoiceView) findViewById(R.id.voiceInterface);
+        voiceView.setInteractiveVoiceListener(this);
+        CognitoCredentialsProvider credentialsProvider = new CognitoCredentialsProvider(
+                appContext.getResources().getString(R.string.identity_id_test),
+                Regions.fromName(appContext.getResources().getString(R.string.aws_region)));
+        voiceView.getViewAdapter().setCredentialProvider(credentialsProvider);
+        voiceView.getViewAdapter().setInteractionConfig(
+                new InteractionConfig(appContext.getString(R.string.bot_name),
+                        appContext.getString(R.string.bot_alias)));
+        voiceView.getViewAdapter().setAwsRegion(appContext.getString(R.string.aws_region));
+        startNewConversation();
+    }
+
+    @Override
+    public void dialogReadyForFulfillment(final Map<String, String> slots, final String intent) {
+        Log.d(TAG, String.format(
+                Locale.US,
+                "Dialog ready for fulfillment:\n\tIntent: %s\n\tSlots: %s",
+                intent,
+                slots.toString()));
+    }
+
+    @Override
+    public void onResponse(Response response) {
+        Log.d(TAG, "Bot response: " + response.getTextResponse());
+        Log.d(TAG, "Transcript: " + response.getInputTranscript());
+        addMessage(new TextMessage(response.getInputTranscript(), "tx", getCurrentTimeStamp()));
+        addMessage(new TextMessage(response.getTextResponse(), "rx", getCurrentTimeStamp()));
+        //responseTextView.setText(response.getTextResponse());
+        //transcriptTextView.setText(response.getInputTranscript());
+    }
+
+    @Override
+    public void onError(final String responseText, final Exception e) {
+        Log.e(TAG, "Error: " + responseText, e);
     }
 
     @Override
@@ -50,20 +97,20 @@ public class TextActivity extends Activity {
     private void init() {
         Log.d(TAG, "Initializing text component: ");
         appContext = getApplicationContext();
-        userTextInput = (EditText) findViewById(R.id.userInputEditText);
+//        userTextInput = (EditText) findViewById(R.id.userInputEditText);
 
         // Set text edit listener.
-        userTextInput.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if ((event.getAction() == KeyEvent.ACTION_DOWN)
-                        && (keyCode == KeyEvent.KEYCODE_ENTER)) {
-                    textEntered();
-                    return true;
-                }
-                return false;
-            }
-        });
+//        userTextInput.setOnKeyListener(new View.OnKeyListener() {
+//            @Override
+//            public boolean onKey(View v, int keyCode, KeyEvent event) {
+//                if ((event.getAction() == KeyEvent.ACTION_DOWN)
+//                        && (keyCode == KeyEvent.KEYCODE_ENTER)) {
+//                    textEntered();
+//                    return true;
+//                }
+//                return false;
+//            }
+//        });
 
         initializeLexSDK();
         startNewConversation();
@@ -92,22 +139,22 @@ public class TextActivity extends Activity {
     /**
      * Read user text input.
      */
-    private void textEntered() {
-        // showToast("Text input not implemented");
-        String text = userTextInput.getText().toString();
-        if (!inConversation || convContinuation == null) {
-            Log.d(TAG, " -- New conversation started: " + text);
-            startNewConversation();
-            addMessage(new TextMessage(text, "tx", getCurrentTimeStamp()));
-            lexInteractionClient.textInForTextOut(text, null);
-            inConversation = true;
-        } else {
-            Log.d(TAG, " -- Responding with text: " + text);
-            addMessage(new TextMessage(text, "tx", getCurrentTimeStamp()));
-            convContinuation.continueWithTextInForTextOut(text);
-        }
-        clearTextInput();
-    }
+//    private void textEntered() {
+//        // showToast("Text input not implemented");
+//        String text = userTextInput.getText().toString();
+//        if (!inConversation || convContinuation == null) {
+//            Log.d(TAG, " -- New conversation started: " + text);
+//            startNewConversation();
+//            addMessage(new TextMessage(text, "tx", getCurrentTimeStamp()));
+//            lexInteractionClient.textInForTextOut(text, null);
+//            inConversation = true;
+//        } else {
+//            Log.d(TAG, " -- Responding with text: " + text);
+//            addMessage(new TextMessage(text, "tx", getCurrentTimeStamp()));
+//            convContinuation.continueWithTextInForTextOut(text);
+//        }
+//        clearTextInput();
+//    }
 
     /**
      * Pass user input to Lex client.
@@ -126,15 +173,15 @@ public class TextActivity extends Activity {
         Log.d(TAG, "Starting new conversation");
         Conversation.clear();
         inConversation = false;
-        clearTextInput();
+      //  clearTextInput();
     }
 
     /**
      * Clear text input field.
      */
-    private void clearTextInput() {
-        userTextInput.setText("");
-    }
+//    private void clearTextInput() {
+//        userTextInput.setText("");
+//    }
 
     /**
      * Show the text message on the screen.

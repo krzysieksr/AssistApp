@@ -12,12 +12,12 @@
 
     <include layout="@layout/options" />
 
-    <ImageButton
+    <Button
+        android:text="Welcome message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/welcomeButton"
         android:layout_marginTop="400dp"
-        android:src="@drawable/mic"
         android:layout_centerHorizontal="true"/>
 
 </RelativeLayout>

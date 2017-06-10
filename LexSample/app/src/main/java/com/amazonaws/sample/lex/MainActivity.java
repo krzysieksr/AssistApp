@@ -32,8 +32,8 @@ import java.net.URL;
 public class MainActivity extends Activity implements View.OnClickListener {
     private static final String TAG = "MainActivity";
     private Button textDemoButton;
-    private Button speechDemoButton;
-    private ImageButton infoButton;
+    //private Button speechDemoButton;
+    private Button infoButton;
     //private Spinner voicesSpinner;
     private AmazonPollyPresigningClient client;
     MediaPlayer mediaPlayer;
@@ -81,9 +81,9 @@ public class MainActivity extends Activity implements View.OnClickListener {
     private void init() {
         Log.e(TAG, "Initializing app");
         textDemoButton = (Button) findViewById(R.id.button_select_text);
-        speechDemoButton = (Button) findViewById(R.id.button_select_voice);
+        //speechDemoButton = (Button) findViewById(R.id.button_select_voice);
         textDemoButton.setOnClickListener(this);
-        speechDemoButton.setOnClickListener(this);
+//        speechDemoButton.setOnClickListener(this);
         if(!hasRecordAudioPermission()) {
             requestRecordAudioPermission();
         }
@@ -124,7 +124,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 
 
     void setupPlayButton() {
-        infoButton = (ImageButton) findViewById(R.id.welcomeButton);
+        infoButton = (Button) findViewById(R.id.welcomeButton);
 //        infoButton.setEnabled(false);
         infoButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,7 +134,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
 //                Voice selectedVoice = (Voice) voicesSpinner.getSelectedItem();
 
 
-                String textToRead = "Tekst testowy";
+                String textToRead = "Hello, I am a deaf person. My device can speak on my behalf. Please ask questions to the device";
 
                 // Use voice's sample text if user hasn't provided any text to read.
 //                if (textToRead.trim().isEmpty()) {
@@ -147,7 +147,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
                                 // Set text to synthesize.
                                 .withText(textToRead)
                                 // Set voice selected by the user.
-                                .withVoiceId("en-US")
+                                .withVoiceId("Joanna")
                                 // Set format to MP3.
                                 .withOutputFormat(OutputFormat.Mp3);
 
@@ -171,6 +171,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 }
 
                 // Start the playback asynchronously (since the data source is a network stream).
+                Intent voiceIntent = new Intent(getApplicationContext(), TextActivity.class);
+                startActivity(voiceIntent);
                 mediaPlayer.prepareAsync();
             }
         });
@@ -213,10 +215,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
                 Intent textIntent = new Intent(this, TextActivity.class);
                 startActivity(textIntent);
                 break;
-            case R.id.button_select_voice:
-                Intent voiceIntent = new Intent(this, InteractiveVoiceActivity.class);
-                startActivity(voiceIntent);
-                break;
+//            case R.id.button_select_voice:
+//                Intent voiceIntent = new Intent(this, InteractiveVoiceActivity.class);
+//                startActivity(voiceIntent);
+//                break;
         }
     }
 }
