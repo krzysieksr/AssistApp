@@ -8,6 +8,7 @@ import android.content.pm.PackageManager;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.os.StrictMode;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -36,7 +37,7 @@ public class MainActivity extends Activity implements View.OnClickListener {
     //private Spinner voicesSpinner;
     private AmazonPollyPresigningClient client;
     MediaPlayer mediaPlayer;
-    CognitoCredentialsProvider credentialsProvider;
+    CognitoCachingCredentialsProvider credentialsProvider;
     private static final Regions MY_REGION = Regions.US_EAST_1;
     private static final String COGNITO_POOL_ID="us-east-1:be925de0-60c8-4d54-95ea-211edd0a6a3b";
 
@@ -44,6 +45,10 @@ public class MainActivity extends Activity implements View.OnClickListener {
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+
+        StrictMode.setThreadPolicy(policy);
+
         setContentView(R.layout.activity_main);
         initPollyClient();
         setupNewMediaPlayer();
@@ -54,7 +59,8 @@ public class MainActivity extends Activity implements View.OnClickListener {
     void initPollyClient() {
         // Initialize the Amazon Cognito credentials provider.
         credentialsProvider =
-                new CognitoCredentialsProvider(
+                new CognitoCachingCredentialsProvider(
+                        getApplicationContext(),
                         COGNITO_POOL_ID,
                         MY_REGION
                 );
